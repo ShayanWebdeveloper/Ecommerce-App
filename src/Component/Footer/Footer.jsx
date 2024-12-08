@@ -4,7 +4,7 @@ import './Footer.css'
 import { FaTwitter } from "react-icons/fa";
 import { FaLinkedin } from "react-icons/fa";
 import { IoLocation } from "react-icons/io5";
-import { FaArrowCircleRight } from "react-icons/fa";
+
 import { FaPinterest } from "react-icons/fa";
 import { IoMdMail } from "react-icons/io";
 import { FaFacebookSquare } from "react-icons/fa";
