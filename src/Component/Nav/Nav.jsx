@@ -12,7 +12,6 @@ import './Nav.css';
 import { useNavigate } from 'react-router';
 
 import { setCart } from '../../Redux/Action';
-
 const Nav = ({ inputValue, handleInputChange }) => {
   const [data, setData] = useState([]);
   const [open, setOpen] = useState(false);
@@ -97,11 +96,12 @@ const Nav = ({ inputValue, handleInputChange }) => {
   };
 
   const handleCheckout = () => {
-    setCheckoutOpen(true);
+    if (cartItems.length > 0) {
+      setCheckoutOpen(true);
+    }
   };
 
   const handleConfirmCheckout = (values) => {
-
     dispatch(setCart([]));
     setCheckoutOpen(false);
     localStorage.removeItem('cart');
@@ -160,15 +160,20 @@ const Nav = ({ inputValue, handleInputChange }) => {
         </div>
 
         <div className="checkout-button-container">
-          <button className="checkout-btn" onClick={handleCheckout}>Proceed to Checkout</button>
+          <button 
+            className="checkout-btn" 
+            onClick={handleCheckout}
+            disabled={cartItems.length === 0} // Disable the button if the cart is empty
+          >
+            Proceed to Checkout
+          </button>
         </div>
       </Drawer>
-
 
       <Modal
         title="Checkout Details"
         visible={checkoutOpen}
-        onOk={() => { }}
+        onOk={() => {}}
         onCancel={handleCancelCheckout}
         footer={null}
         className="checkout-modal"
@@ -181,32 +186,30 @@ const Nav = ({ inputValue, handleInputChange }) => {
           <Form.Item
             label="Full Name"
             name="name"
-            rules={[{ required: true, message: 'Please enter your name!' }]}>
+            rules={[{ required: true, message: 'Please enter your name!' }]} >
             <Input placeholder="Enter your full name" />
           </Form.Item>
 
           <Form.Item
             label="Email"
             name="email"
-            rules={[{ required: true, message: 'Please enter your email!' }, { type: 'email', message: 'Please enter a valid email!' }]}>
+            rules={[{ required: true, message: 'Please enter your email!' }, { type: 'email', message: 'Please enter a valid email!' }]} >
             <Input placeholder="Enter your email address" />
           </Form.Item>
 
           <Form.Item
             label="Shipping Address"
             name="address"
-            rules={[{ required: true, message: 'Please enter your shipping address!' }]}>
+            rules={[{ required: true, message: 'Please enter your shipping address!' }]} >
             <Input placeholder="Enter your shipping address" />
           </Form.Item>
-
 
           <Form.Item
             label="Payment Method"
             name="paymentMethod"
-            rules={[{ required: true, message: 'Please select a payment method!' }]}>
+            rules={[{ required: true, message: 'Please select a payment method!' }]} >
             <Select placeholder="Select a payment method">
               <Select.Option value="cash">Cash on Delivery</Select.Option>
-
               <Select.Option value="credit">Credit Card</Select.Option>
               <Select.Option value="paypal">PayPal</Select.Option>
             </Select>
