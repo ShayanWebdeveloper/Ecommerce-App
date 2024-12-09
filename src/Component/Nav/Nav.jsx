@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import logo from '../../Assets/logo.svg';
-import { Drawer } from 'antd';
+import { Drawer, Modal, Input, Button, Form, Select } from 'antd';
 import { IoCartOutline } from "react-icons/io5";
 import { CiHeart } from "react-icons/ci";
 import { MdAccountCircle } from "react-icons/md";
@@ -11,27 +11,20 @@ import axios from 'axios';
 import './Nav.css';
 import { useNavigate } from 'react-router';
 
+import { setCart } from '../../Redux/Action';
+
 const Nav = ({ inputValue, handleInputChange }) => {
   const [data, setData] = useState([]);
-
-
-
   const [open, setOpen] = useState(false);
-
-
-  
-  const cartItems = useSelector(state => state);  // Access cart state from Redux store
+  const [checkoutOpen, setCheckoutOpen] = useState(false);
+  const [setIsCheckoutComplete] = useState(false);
+  const cartItems = useSelector(state => state);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
 
   const handleChange = (e) => {
     handleInputChange(e.target.value);
   };
-
-
-
-
 
   const fetchData = () => {
     axios
@@ -57,7 +50,7 @@ const Nav = ({ inputValue, handleInputChange }) => {
   };
 
   const removeItemFromCart = (id) => {
-    dispatch(removeFromCart(id)); // Dispatch the remove action to Redux
+    dispatch(removeFromCart(id));
   };
 
   const getTotalPrice = () => {
@@ -103,6 +96,22 @@ const Nav = ({ inputValue, handleInputChange }) => {
     return cartItems.length;
   };
 
+  const handleCheckout = () => {
+    setCheckoutOpen(true);
+  };
+
+  const handleConfirmCheckout = (values) => {
+
+    dispatch(setCart([]));
+    setCheckoutOpen(false);
+    localStorage.removeItem('cart');
+    setIsCheckoutComplete(true);
+  };
+
+  const handleCancelCheckout = () => {
+    setCheckoutOpen(false);
+  };
+
   return (
     <div className="Nav">
       <div className="Logo">
@@ -119,11 +128,11 @@ const Nav = ({ inputValue, handleInputChange }) => {
       </div>
 
       <div className="search-container">
-        <input 
-          type="text" 
-          placeholder="Search products..." 
-          value={inputValue} 
-        onChange={handleChange} 
+        <input
+          type="text"
+          placeholder="Search products..."
+          value={inputValue}
+          onChange={handleChange}
           className="search-input"
         />
       </div>
@@ -149,7 +158,69 @@ const Nav = ({ inputValue, handleInputChange }) => {
         <div className="cart-total">
           <h3>Total: ${getTotalPrice()}</h3>
         </div>
+
+        <div className="checkout-button-container">
+          <button className="checkout-btn" onClick={handleCheckout}>Proceed to Checkout</button>
+        </div>
       </Drawer>
+
+
+      <Modal
+        title="Checkout Details"
+        visible={checkoutOpen}
+        onOk={() => { }}
+        onCancel={handleCancelCheckout}
+        footer={null}
+        className="checkout-modal"
+      >
+        <Form
+          layout="vertical"
+          onFinish={handleConfirmCheckout}
+          initialValues={{ name: '', email: '', address: '', paymentMethod: 'cash' }}
+        >
+          <Form.Item
+            label="Full Name"
+            name="name"
+            rules={[{ required: true, message: 'Please enter your name!' }]}>
+            <Input placeholder="Enter your full name" />
+          </Form.Item>
+
+          <Form.Item
+            label="Email"
+            name="email"
+            rules={[{ required: true, message: 'Please enter your email!' }, { type: 'email', message: 'Please enter a valid email!' }]}>
+            <Input placeholder="Enter your email address" />
+          </Form.Item>
+
+          <Form.Item
+            label="Shipping Address"
+            name="address"
+            rules={[{ required: true, message: 'Please enter your shipping address!' }]}>
+            <Input placeholder="Enter your shipping address" />
+          </Form.Item>
+
+
+          <Form.Item
+            label="Payment Method"
+            name="paymentMethod"
+            rules={[{ required: true, message: 'Please select a payment method!' }]}>
+            <Select placeholder="Select a payment method">
+              <Select.Option value="cash">Cash on Delivery</Select.Option>
+
+              <Select.Option value="credit">Credit Card</Select.Option>
+              <Select.Option value="paypal">PayPal</Select.Option>
+            </Select>
+          </Form.Item>
+
+          <div className="checkout-total">
+            <h3>Total: ${getTotalPrice()}</h3>
+          </div>
+
+          <Form.Item>
+            <Button type="primary" htmlType="submit" block>Confirm Checkout</Button>
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
 };
