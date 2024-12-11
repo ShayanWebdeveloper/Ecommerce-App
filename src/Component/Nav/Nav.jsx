@@ -12,11 +12,13 @@ import './Nav.css';
 import { useNavigate } from 'react-router';
 
 import { setCart } from '../../Redux/Action';
+
 const Nav = ({ inputValue, handleInputChange }) => {
   const [data, setData] = useState([]);
   const [open, setOpen] = useState(false);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
-  const [setIsCheckoutComplete] = useState(false);
+  const [, setIsCheckoutComplete] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);  
   const cartItems = useSelector(state => state);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -112,13 +114,18 @@ const Nav = ({ inputValue, handleInputChange }) => {
     setCheckoutOpen(false);
   };
 
+
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
   return (
     <div className="Nav">
       <div className="Logo">
         <img src={logo} alt="Logo" />
       </div>
 
-      <div className="link">
+      <div className={`link ${isMenuOpen ? 'open' : ''}`}>
         <button onClick={() => navigate("/")}>Home</button>
         <button>About</button>
         <button>Product</button>
@@ -150,6 +157,13 @@ const Nav = ({ inputValue, handleInputChange }) => {
         </div>
       </div>
 
+      {/* Hamburger Icon */}
+      <div className="hamburger" onClick={toggleMenu}>
+        <div className={`bar ${isMenuOpen ? 'open' : ''}`}></div>
+        <div className={`bar ${isMenuOpen ? 'open' : ''}`}></div>
+        <div className={`bar ${isMenuOpen ? 'open' : ''}`}></div>
+      </div>
+
       <Drawer onClose={onClose} open={open} title="Your Cart">
         <div className="CartItems">
           <GetCartDetails />
@@ -160,10 +174,10 @@ const Nav = ({ inputValue, handleInputChange }) => {
         </div>
 
         <div className="checkout-button-container">
-          <button 
-            className="checkout-btn" 
+          <button
+            className="checkout-btn"
             onClick={handleCheckout}
-            disabled={cartItems.length === 0} // Disable the button if the cart is empty
+            disabled={cartItems.length === 0}
           >
             Proceed to Checkout
           </button>
@@ -173,7 +187,7 @@ const Nav = ({ inputValue, handleInputChange }) => {
       <Modal
         title="Checkout Details"
         visible={checkoutOpen}
-        onOk={() => {}}
+        onOk={() => { }}
         onCancel={handleCancelCheckout}
         footer={null}
         className="checkout-modal"

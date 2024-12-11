@@ -10,6 +10,21 @@ import { useSelector, useDispatch } from 'react-redux';
 import { addToCart, removeFromCart, setCart } from '../../Redux/Action';
 import { Spin, Flex } from 'antd';
 
+// Helper function to render stars
+const StarRating = ({ rating }) => {
+    const fullStars = Math.floor(rating);
+    const halfStar = rating % 1 >= 0.5 ? true : false;
+    const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
+
+    return (
+        <div className="star-rating">
+            {Array(fullStars).fill(<span className="star full">&#9733;</span>)}
+            {halfStar && <span className="star half">&#9733;</span>}
+            {Array(emptyStars).fill(<span className="star empty">&#9733;</span>)}
+        </div>
+    );
+};
+
 const Card = ({ inputValue }) => {
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -38,7 +53,6 @@ const Card = ({ inputValue }) => {
 
     const navigate = useNavigate();
 
-
     const Add_to_Cart = (id) => {
         if (cartState.includes(id)) {
             dispatch(removeFromCart(id));
@@ -47,17 +61,16 @@ const Card = ({ inputValue }) => {
         }
     };
 
-
     const isInCart = (id) => cartState.includes(id);
 
     const filteredData = data.filter((item) =>
         item.title.toLowerCase().includes(inputValue.toLowerCase()) ||
         item.category.toLowerCase().includes(inputValue.toLowerCase())
     );
+    console.log(filteredData)
 
     return (
         <div className="card-container">
-
             {loading ? (
                 <div className="loader">
                     <Flex align="center" gap="middle">
@@ -83,6 +96,11 @@ const Card = ({ inputValue }) => {
                                     </div>
                                     <div className="card-price">
                                         <p>${item.price}</p>
+                                    </div>
+                                    {/* Display rating */}
+                                    <div className="card-rating">
+                                        <StarRating rating={item.rating.rate} />
+                                        <span className="rating-count">({item.rating.count} ratings)</span>
                                     </div>
                                 </div>
                                 <div className="card-actions">
